@@ -9,6 +9,8 @@
 #include <x86intrin.h>
 #include <immintrin.h>
 
+#define DUP8(a) a, a, a, a, a, a, a, a
+
 void countPix (unsigned char* pixels, float x0, float y0, float length);
 
 void updateFrame (sf::Texture* mondelbrot, unsigned char* pixels, float x0, float y0, float length);

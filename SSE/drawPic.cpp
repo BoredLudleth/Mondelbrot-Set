@@ -10,41 +10,42 @@ void countPix (unsigned char* pixels, float x0, float y0, float length) {
 
     const float cx0 = x0;
 
-    __m256 _maxr = _mm256_set_ps (max_r, max_r, max_r, max_r, max_r, max_r, max_r, max_r);
+    __m256 _maxr = _mm256_set_ps (DUP8(max_r));
 
     __m256 _x0 = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-    __m256 _y0 = _mm256_set_ps  (y0, y0, y0, y0, y0, y0, y0, y0);
+    __m256 _y0 = _mm256_set_ps  (DUP8(y0));
     __m256 _xn = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-    __m256 _yn = _mm256_set_ps  (y0, y0, y0, y0, y0, y0, y0, y0);
+    __m256 _yn = _mm256_set_ps  (DUP8(y0));
 
     __m256 _x2 = _mm256_mul_ps (_xn, _xn);
     __m256 _y2 = _mm256_mul_ps (_yn, _yn);
     __m256 _xy = _mm256_mul_ps (_xn, _yn);
 
     __m256 _counter = _mm256_setzero_ps ();
-    __m256 _mask = _mm256_set_ps (0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 
-    __m256 _increase = _mm256_set_ps (1, 1, 1, 1, 1, 1, 1, 1);
+    __m256 _increase = _mm256_set_ps (DUP8(1));
 
     __m256 _rcur = _mm256_setzero_ps ();
+
+    __m256 _mask = _mm256_cmp_ps (_rcur, _maxr, _CMP_LE_OS);
     
     for (int pix_y = 0; pix_y < 1000; pix_y++) {
         y0 -= dx;
         x0 = cx0;
         for (int pix_x = 0; pix_x < 1000; pix_x += 8) {
             _x0 = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-            _y0 = _mm256_set_ps  (y0, y0, y0, y0, y0, y0, y0, y0);
+            _y0 = _mm256_set_ps  (DUP8(y0));
 
             _xn = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-            _yn = _mm256_set_ps  (y0, y0, y0, y0, y0, y0, y0, y0);
+            _yn = _mm256_set_ps  (DUP8(y0));
 
             _counter = _mm256_setzero_ps ();
 
-            _mask = _mm256_set_ps (0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+            _mask = _mm256_cmp_ps (_increase, _maxr, _CMP_LE_OS);
 
             counter = 0;
             
-            while (counter < 255 /*&& (mask_count (_mask) != 0)*/) {
+            while (counter < 255 && (mask_count (_mask) != 0)) {
                 _x2 = _mm256_mul_ps (_xn, _xn);
                 _y2 = _mm256_mul_ps (_yn, _yn);
                 _xy = _mm256_mul_ps (_xn, _yn);
@@ -85,7 +86,7 @@ void updateFrame (sf::Texture* mondelbrot, unsigned char* pixels, float x0, floa
 }
 
 int mask_count (__m256 _mask) {
-    __m256 _checker = _mm256_set_ps (1, 1, 1, 1, 1, 1, 1, 1);
+    __m256 _checker = _mm256_set_ps (DUP8(1));
     _checker = _mm256_and_ps (_mask, _checker);
 
     float* check = (float*) &_checker;
