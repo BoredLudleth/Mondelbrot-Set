@@ -12,10 +12,14 @@ void countPix (unsigned char* pixels, float x0, float y0, float length) {
 
     __m256 _maxr = _mm256_set_ps (DUP8(max_r));
 
-    __m256 _x0 = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-    __m256 _y0 = _mm256_set_ps  (DUP8(y0));
-    __m256 _xn = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
-    __m256 _yn = _mm256_set_ps  (DUP8(y0));
+    __m256 _delta = _mm256_set_ps (0, dx, 2 * dx, 3 * dx, 4 * dx, 5 * dx, 6 * dx, 7 * dx); 
+
+    __m256 _x0 = _mm256_set_ps (DUP8(x0));
+    _x0 = _mm256_add_ps (_x0, _delta);
+    __m256 _y0 = _mm256_set_ps (DUP8(y0));
+    __m256 _xn = _mm256_set_ps (DUP8(x0));
+    _xn = _mm256_add_ps (_xn, _delta);
+    __m256 _yn = _mm256_set_ps (DUP8(y0));
 
     __m256 _x2 = _mm256_mul_ps (_xn, _xn);
     __m256 _y2 = _mm256_mul_ps (_yn, _yn);
@@ -33,10 +37,12 @@ void countPix (unsigned char* pixels, float x0, float y0, float length) {
         y0 -= dx;
         x0 = cx0;
         for (int pix_x = 0; pix_x < 1000; pix_x += 8) {
-            _x0 = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
+            _x0 = _mm256_set_ps (DUP8(x0));
+            _x0 = _mm256_add_ps (_x0, _delta);
             _y0 = _mm256_set_ps  (DUP8(y0));
 
-            _xn = _mm256_set_ps  (x0, x0 + dx, x0 + 2 * dx, x0 + 3 * dx, x0 + 4 * dx, x0 + 5 * dx, x0 + 6 * dx, x0 + 7 * dx);
+            _xn = _mm256_set_ps (DUP8(x0));
+            _xn = _mm256_add_ps (_xn, _delta);
             _yn = _mm256_set_ps  (DUP8(y0));
 
             _counter = _mm256_setzero_ps ();
@@ -90,12 +96,10 @@ int mask_count (__m256 _mask) {
     _checker = _mm256_and_ps (_mask, _checker);
 
     float* check = (float*) &_checker;
-    // printf("%d", check[0]);
 
     float result = 0;
     for (int i = 0; i < 8; i++) {
         result += check[i];
-        //printf ("result: %d", result);
     }
 
     return (int) result;
