@@ -2,7 +2,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1000, 1000, true), "Mondelbrot-Set");     //potential sick fall if doesn't make
+    sf::RenderWindow window(sf::VideoMode(1000, 1000, true), "Mondelbrot-Set");
 
     unsigned char pixels[4 * 1000 * 1000];
 
