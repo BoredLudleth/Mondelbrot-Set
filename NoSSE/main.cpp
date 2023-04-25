@@ -26,10 +26,8 @@ int main()
     {
 
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             begin = clock();
-            
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Right) {
                     x0 += length / 10;
@@ -60,8 +58,7 @@ int main()
                     length *= 1.3; 
                     updateFrame (&mondelbrot, pixels, x0, y0, length);
                 }
-            }
-            if (event.type != sf::Event::KeyPressed) {
+            } else if (event.type != sf::Event::KeyPressed) {
                 updateFrame (&mondelbrot, pixels, x0, y0, length);
             }
             if ( event.type == sf::Event::Closed )
@@ -69,8 +66,6 @@ int main()
                 window.close();
                 break;
             }
-
-
 
             end = clock();
             system ("clear");

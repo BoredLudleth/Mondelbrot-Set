@@ -5,7 +5,7 @@ link: main.cpp
 	gcc -c drawPic.cpp -o drawPic.o 
 
 compile: main.o
-	g++ main.o drawPic.o -o main -lsfml-graphics -lsfml-window -lsfml-system
+	g++ main.o drawPic.o -o main -fsanitize=leak,address -lsfml-graphics -lsfml-window -lsfml-system
 
 clean:
 	rm *.o *.out *.lst main
